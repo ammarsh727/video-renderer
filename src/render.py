@@ -424,6 +424,10 @@ def _export_pptx(spec, scene_artifacts, output):
 
 def render(spec_path: str, output: str, workdir: str | None = None):
     spec = load_spec(spec_path)
+    # Resolve the logo path once so the video overlay and PPTX export agree.
+    branding = spec.get("branding")
+    if branding and branding.get("logo") and not Path(branding["logo"]).is_absolute():
+        branding["logo"] = str(Path(spec_path).parent / branding["logo"])
     theme = spec["theme"]
     voice_cfg = spec.get("voice", {})
     workdir = Path(workdir or Path(spec_path).parent / ".render_cache")
